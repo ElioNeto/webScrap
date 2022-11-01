@@ -8,8 +8,14 @@ rp(url)
   .then((html) => {
     //console.log(html);
     const $ = cheerio.load(html); // Carrega o HTML para a constante $
-    console.log($("td > b > a", html).length); // <td><b><a></a></b></td>
-    console.log($("td > b > a", html)); // imprime os nodes no html
+    const numberOfLinks = $("td > b > a", html).length;
+    /* console.log($("td > b > a", html).length); // <td><b><a></a></b></td>
+    console.log($("td > b > a", html)); // imprime os nodes no html */
+    const wikiURLs = [];
+    for (let i = 0; i < numberOfLinks; i++) {
+      wikiURLs.push($("td > b > a", html)[i].attribs.href);
+    }
+    console.log(wikiURLs);
   })
   .catch((err) => {
     console.error(err);
