@@ -1,22 +1,28 @@
 const rp = require("request-promise");
 const cheerio = require("cheerio");
+const animes = require("./modules/animes");
 
-const url =
-  "https://en.wikipedia.org/wiki/List_of_Presidents_of_the_United_States";
+const url = "https://animesonline.cc/generos/";
 
 rp(url)
   .then((html) => {
-    //console.log(html);
-    const $ = cheerio.load(html); // Carrega o HTML para a constante $
-    const numberOfLinks = $("td > b > a", html).length;
-    /* console.log($("td > b > a", html).length); // <td><b><a></a></b></td>
-    console.log($("td > b > a", html)); // imprime os nodes no html */
-    const wikiURLs = [];
-    for (let i = 0; i < numberOfLinks; i++) {
-      wikiURLs.push($("td > b > a", html)[i].attribs.href);
+    const $ = cheerio.load(html);
+    const list = [];
+    const total = $("p > a").length;
+    for (let index = 0; index < total; index++) {
+      let item = $("p > a")[index].childNodes[0].data;
+      let link = $("p > a")[index].attribs.href;
+      let obj = { item, link };
+      list.push(obj);
     }
-    console.log(wikiURLs);
+    return Promise.all(
+      list.map((url) => {
+        console.log(url);
+        return animes(url.link);
+      })
+    );
   })
-  .catch((err) => {
-    console.error(err);
-  });
+  .then((a) => {
+    console.log(a);
+  })
+  .catch((e) => console.log(e));
